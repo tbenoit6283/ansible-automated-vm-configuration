@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - variables.yml
+
+  roles:
+  - PaloAltoNetworks.paloaltonetworks
+
+  tasks:
+  - name: Update existing fw rule on the firewall
+    panos_security_rule:
+        provider: '{{ provider }}'
+        rule_name: 'Ansible test'
+        description: 'An Ansible test rule for fw with Security Profile'
+        source_zone: ['Internal']
+        destination_zone: ['External']
+        source_ip: ['any']
+        source_user: ['any']
+        destination_ip: ['Ansible-DAG']
+        category: ['any']
+        application: ['web-browsing','ssl','ms-rdp','ping','dns','ssh']
+        service: ['application-default']
+        hip_profiles: ['any']
+        action: 'allow'
+        antivirus: 'default'
+        vulnerability: 'strict'
+        spyware: 'strict'
+        url_filtering: 'default'
+        wildfire_analysis: 'default'
+        log_setting: 'Panorama'
+        log_start: 'yes'
+        tag_name: 'Ansible'
+        commit: "False"
+

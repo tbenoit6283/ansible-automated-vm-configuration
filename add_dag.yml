@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - variables.yml
+
+  roles:
+  - PaloAltoNetworks.paloaltonetworks
+
+  tasks:
+  - name: Create tag object 'Ansible'
+    panos_tag_object:
+     provider: '{{ provider }}'
+     name: 'Ansible'
+     color: 'green'
+     comments: 'created by Ansible'
+     commit: "False"
+
+  - name: Create object group 'Ansible-DAG'
+    panos_address_group:
+     provider: '{{ provider }}'
+     name: 'Ansible-DAG'
+     dynamic_value: "'First_Tag'"
+     tag: ['Ansible']
+     commit: "False"

@@ -1,0 +1,27 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - variables.yml
+
+  roles:
+  - PaloAltoNetworks.paloaltonetworks
+
+  tasks:
+  - name: Add 'First_Tag' tag to 1.1.1.1
+    panos_registered_ip:
+     provider: '{{ provider }}'
+     ips: ['1.1.1.1']
+     tags: ['First_Tag']
+     state: 'present'
+
+  - name: Add 'First_Tag' tag to 1.1.1.2
+    panos_registered_ip:
+     provider: '{{ provider }}'
+     ips: ['1.1.1.2']
+     tags: ['First_Tag']
+     state: 'present'
+
+

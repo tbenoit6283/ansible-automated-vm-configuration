@@ -1,0 +1,19 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - variables.yml
+
+  roles:
+  - PaloAltoNetworks.paloaltonetworks
+
+  tasks:
+  - name: Delete ansible FW rule on the firewall
+    panos_security_rule:
+     provider: '{{ provider }}'
+     rule_name: 'Ansible test'
+     state: 'absent'
+     commit: "False"
+

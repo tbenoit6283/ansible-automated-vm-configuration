@@ -1,0 +1,63 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - variables.yml
+
+  roles:
+  - PaloAltoNetworks.paloaltonetworks
+
+  tasks:
+  - name: create filtered zone on a firewall
+    panos_zone:
+     provider: '{{ provider }}'
+     zone: 'filtered'
+     mode: 'layer3'
+
+  - name: add ethernet1/8 to zone filtered
+    panos_interface:
+     provider: '{{ provider }}'
+     zone_name: 'filtered'
+     mode: 'layer3'
+     vr_name: 'ansible-VR'
+     if_name: "ethernet1/8"
+     ip: ["10.1.1.254/24"]
+     management_profile: "ping"
+     enable_dhcp: false
+     commit: "False"
+
+  - name: create unfiltered zone on a firewall
+    panos_zone:
+     provider: '{{ provider }}'
+     zone: 'unfiltered'
+     mode: 'layer3'
+
+  - name: add ethernet1/9 to zone unfiltered
+    panos_interface:
+     provider: '{{ provider }}'
+     zone_name: 'unfiltered'
+     mode: 'layer3'
+     vr_name: 'ansible-VR'
+     if_name: "ethernet1/9"
+     management_profile: "ping"
+     ip: ["20.1.1.1/24"]
+     enable_dhcp: false
+     commit: "False"
+
+  - name: Create default route
+    panos_static_route:
+     provider: '{{ provider }}'
+     name: 'default'
+     virtual_router: ansible-VR
+     interface: "ethernet1/9"
+     nexthop_type: ip-address
+     destination: "0.0.0.0/0"
+     nexthop: '20.1.1.254'
+
+  - name: Commit config on firewall
+    panos_commit:
+     provider: '{{ provider }}'
+
+

@@ -1,0 +1,88 @@
+---
+- hosts: localhost
+  connection: local
+  gather_facts: false
+
+  vars_files:
+  - variables.yml
+
+  roles:
+  - PaloAltoNetworks.paloaltonetworks
+
+  tasks:
+  - name: Remove 'First_Tag' from 1.1.1.1 (will unregister entirely)
+    panos_registered_ip:
+     provider: '{{ provider }}'
+     ips: ['1.1.1.1']
+     tags: ['First_Tag']
+     state: 'absent'
+
+  - name: Remove 'First_Tag' from 1.1.1.2 (will unregister entirely)
+    panos_registered_ip:
+     provider: '{{ provider }}'
+     ips: ['1.1.1.2']
+     tags: ['First_Tag']
+     state: 'absent'
+  
+  - name: Delete ansible FW rule on the firewall
+    panos_security_rule:
+     provider: '{{ provider }}'
+     rule_name: 'Ansible test'
+     state: 'absent'
+     commit: "False"
+
+  - name: Delete object group 'Ansible-DAG'
+    panos_address_group:
+     provider: '{{ provider }}'
+     name: 'Ansible-DAG'
+     dynamic_value: "'First_Tag'"
+     state: 'absent'
+     commit: "False"
+
+  - name: Remove tag object 'Ansible'
+    panos_tag_object:
+     provider: '{{ provider }}'
+     name: 'Ansible'
+     color: 'green'
+     state: 'absent'
+     commit: "False"
+
+  - name: delete Layer3 ethernet1/8
+    panos_interface:
+     provider: '{{ provider }}'
+     if_name: "ethernet1/8"
+     state: 'absent'
+     commit: "False"
+
+  - name: delete Layer3 ethernet1/9 
+    panos_interface:
+     provider: '{{ provider }}'
+     if_name: "ethernet1/9"
+     state: 'absent'
+     commit: "False"
+
+
+  - name: delete filtered zone on a firewall
+    panos_zone:
+     provider: '{{ provider }}'
+     zone: 'filtered'
+     mode: 'layer3'
+     state: 'absent'
+
+  - name: delete unfiltered zone on a firewall
+    panos_zone:
+     provider: '{{ provider }}'
+     zone: 'unfiltered'
+     mode: 'layer3'
+     state: 'absent'
+
+  - name: Delete Ansible Virtual Router
+    panos_virtual_router:
+      provider: '{{ provider }}'
+      name: ansible-VR
+      state: 'absent'
+      commit: false
+
+  - name: Commit config on firewall
+    panos_commit:
+     provider: '{{ provider }}'
