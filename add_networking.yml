@@ -10,38 +10,36 @@
   - PaloAltoNetworks.paloaltonetworks
 
   tasks:
-  - name: create filtered zone on a firewall
+  - name: create Internal zone on a firewall
     panos_zone:
      provider: '{{ provider }}'
-     zone: 'filtered'
+     zone: 'Internal'
      mode: 'layer3'
 
-  - name: add ethernet1/8 to zone filtered
+  - name: add ethernet1/1 to zone Internal
     panos_interface:
      provider: '{{ provider }}'
-     zone_name: 'filtered'
+     zone_name: 'Internal'
      mode: 'layer3'
      vr_name: 'ansible-VR'
-     if_name: "ethernet1/8"
+     if_name: "ethernet1/1"
      ip: ["10.1.1.254/24"]
-     management_profile: "ping"
      enable_dhcp: false
      commit: "False"
 
-  - name: create unfiltered zone on a firewall
+  - name: create External zone on a firewall
     panos_zone:
      provider: '{{ provider }}'
-     zone: 'unfiltered'
+     zone: 'External'
      mode: 'layer3'
 
-  - name: add ethernet1/9 to zone unfiltered
+  - name: add ethernet1/2 to zone unfiltered
     panos_interface:
      provider: '{{ provider }}'
-     zone_name: 'unfiltered'
+     zone_name: 'External'
      mode: 'layer3'
      vr_name: 'ansible-VR'
-     if_name: "ethernet1/9"
-     management_profile: "ping"
+     if_name: "ethernet1/2"
      ip: ["20.1.1.1/24"]
      enable_dhcp: false
      commit: "False"
@@ -51,7 +49,7 @@
      provider: '{{ provider }}'
      name: 'default'
      virtual_router: ansible-VR
-     interface: "ethernet1/9"
+     interface: "ethernet1/2"
      nexthop_type: ip-address
      destination: "0.0.0.0/0"
      nexthop: '20.1.1.254'
